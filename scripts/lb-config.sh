@@ -54,7 +54,7 @@ systemctl is-active --quiet haproxy
 
 # --- Extension E1 : keepalived / VRRP ---------------------------------------
 if [ "${ENABLE_E1}" = "1" ]; then
-  command -v keepalived > /dev/null || { apt_update_une_fois; apt_installer keepalived; }
+  command -v keepalived > /dev/null || { apt-get update -qq; apt_installer keepalived; }
   if [ "${MON_NOM}" = "lb1" ]; then ETAT=MASTER; PRIO=150; PAIR="${RESEAU}.12"
   else ETAT=BACKUP; PRIO=100; PAIR="${RESEAU}.11"; fi
   IFACE=$(ip -o -4 addr show | awk -v ip="${MON_IP}" '$4 ~ "^"ip"/" {print $2}')
@@ -64,7 +64,7 @@ global_defs {
   script_user root
 }
 vrrp_script chk_haproxy {
-  script "/usr/bin/pidof haproxy"
+  script "/usr/bin/systemctl is-active --quiet haproxy"
   interval 1
   fall 2
   rise 2

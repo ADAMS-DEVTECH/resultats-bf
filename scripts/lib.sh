@@ -7,6 +7,11 @@ cd /tmp
 # Forcer IPv4 pour apt (évite les échecs sur archive.ubuntu.com en IPv6)
 echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4
 
+# DNS public en complément de celui du réseau (évite les échecs de résolution)
+install -d /etc/systemd/resolved.conf.d
+printf '[Resolve]\nDNS=1.1.1.1 8.8.8.8\n' > /etc/systemd/resolved.conf.d/99-dns.conf
+systemctl restart systemd-resolved
+
 apt_update_une_fois() {
   if [ ! -f /var/lib/resultats-bf.apt-update ]; then
     apt-get update -qq

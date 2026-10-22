@@ -1,0 +1,22 @@
+{
+  "title": "RESULTATS-BF",
+  "uid": "resultats-bf",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    { "id": 1, "type": "timeseries", "title": "Machines vivantes (1 = en ligne)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "up", "legendFormat": "{{instance}}" } ] },
+    { "id": 2, "type": "timeseries", "title": "Débit réseau entrant (octets/s)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "sum by (instance) (rate(node_network_receive_bytes_total{device!=\"lo\"}[30s]))", "legendFormat": "{{instance}}" } ] },
+    { "id": 3, "type": "timeseries", "title": "CPU utilisé (%)",
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "100 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[30s])) * 100", "legendFormat": "{{instance}}" } ] }
+  ]
+}

@@ -1,0 +1,15 @@
+# Fins de ligne LF partout (évite l'échec des scripts dans la VM sous Windows)
+* text=auto eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.cfg text eol=lf
+*.conf text eol=lf
+*.md text eol=lf
+Vagrantfile text eol=lf
+.env.exemple text eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary

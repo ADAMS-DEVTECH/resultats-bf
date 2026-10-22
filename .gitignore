@@ -1,0 +1,22 @@
+# Secrets : ne JAMAIS versionner
+.env
+
+# Vagrant / VirtualBox
+.vagrant/
+*.box
+*.log
+
+# Fichiers engendrés par le Vagrantfile (source de vérité = Vagrantfile)
+config/noeuds.yml
+
+# Python / Node
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+
+# Éditeurs / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

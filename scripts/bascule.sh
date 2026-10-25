@@ -4,6 +4,11 @@
 cd "$(dirname "$0")/.."
 URL=${URL:-http://localhost:8080}
 
+if ! vagrant status bdd2 --machine-readable | grep -q ',state,running'; then
+  echo "bdd2 n'est pas démarrée : impossible de basculer." >&2
+  exit 1
+fi
+
 if vagrant status bdd1 --machine-readable | grep -q ',state,running'; then
   echo "bdd1 tourne encore : arrêtez-la d'abord (risque de split-brain)." >&2
   exit 1
@@ -23,6 +28,12 @@ for _ in $(seq 1 120); do
   [ "$code" = "200" ] && break
   sleep 0.5
 done
+
+if [ "$code" != "200" ]; then
+  echo "Échec : /sante ne renvoie pas 200 après 60 s (dernier code : $code)." >&2
+  exit 1
+fi
+
 t1=$(date +%s.%N)
 echo "/sante renvoie $code"
 awk -v a="$t0" -v b="$t1" 'BEGIN{printf "Durée de la bascule : %.1f s\n", b-a}'

@@ -56,4 +56,41 @@ Extensions retenues : E1 (lb2 + IP virtuelle VRRP) et E2 (Prometheus + Grafana).
 
 ## 6. Contributions de chaque membre
 
-_À compléter par chacun : tâches réalisées, commits hors domaine (rotation obligatoire), difficultés personnelles._
+_Chaque membre complète sa partie : tâches réalisées, commit hors domaine (rotation obligatoire), difficultés personnelles._
+
+### 6.1 TEGA Paamda Sawratou Lareine, ingénieur applicatif
+
+**Tâches réalisées**
+- Installation sur son propre poste Windows : clone du dépôt, fichier `.env` personnel (`GROUPE=5`), `vagrant up` réussi (5 machines, réseau 192.168.60.0/24), puis vérification via le répartiteur (`/info` alterne app1 et app2, `/resultat` renvoie le candidat). C'est le premier test de reproductibilité réussi par un membre autre que l'architecte.
+- Tests de l'application T1 à T7 (rapport `docs/tests-application.md` et `.pdf`, avec captures) : 400 sans matricule, 404 pour un matricule ou une route inconnus, 200 pour un matricule valide ; redémarrage d'app1 testé directement sur son port 3000 (réponse immédiate : le serveur ne garde aucun état) ; base arrêtée : `/sante` répond 503 en JSON, `/info` reste à 200 ; aucun vrai mot de passe dans l'historique Git.
+- Mesure : avec la base arrêtée, `/sante` met 2,06 s à répondre 503, ce qui correspond au délai de connexion de 2 s de l'application. Mesure unique, à répéter avant le dossier final.
+- Pull request n° 1 (commit `19e2710`) relue et fusionnée dans `main` par ADAMS-DEVTECH.
+
+**Commit hors domaine (rotation)** : branche `fix/bascule-garde-fous`, commit `7464f03`, pull request n° 2. Relecture de `scripts/bascule.sh` (fichier de l'ingénieur données) et ajout de deux garde-fous : le script refuse de s'exécuter si bdd2 est arrêtée, et il se termine en erreur si `/sante` ne revient pas à 200 après 60 s (au lieu d'afficher une durée comme si la bascule avait réussi). Contrôles faits : bdd2 arrêtée, le message « bdd2 n'est pas démarrée : impossible de basculer. » s'affiche ; syntaxe vérifiée avec `bash -n`. Le second garde-fou n'a pas été exercé en conditions réelles : il sera à valider pendant le scénario V4 par l'ingénieur données. Au moment de la rédaction, la pull request est en attente de relecture.
+
+**Difficultés rencontrées**
+
+| Difficulté | Cause | Solution |
+|------------|-------|----------|
+| Vagrant refusait de démarrer : `cmd.exe` introuvable dans le `PATH` | `PATH` Windows incomplet dans le terminal utilisé | Relance depuis une invite de commandes Windows ; le `vagrant up` a ensuite abouti |
+| `git push` refusé : erreur 403, permission refusée | Compte pas encore ajouté comme collaborateur du dépôt | Ajout comme collaboratrice par l'architecte ; le push suivant a réussi |
+| `git add docs/tests-application.md` : `pathspec did not match any files` | Le fichier n'était pas encore copié dans `docs/` | Fichiers placés dans `docs/` puis `git add` du rapport, du PDF et du dossier `captures` |
+| `curl: Could not resolve host: 192.168.X.21` | Le `X` de l'exemple avait été tapé tel quel | Remplacé par 60 (réseau du groupe 5), test refait |
+| `vagrant up bdd1` exécuté avant les `curl` du test T6 | Bloc de commandes collé d'un coup | Test refait commande par commande |
+| Accents illisibles quand `type scripts\bascule.sh` est lancé dans `cmd` | Page de code de `cmd` différente de l'UTF-8 du fichier | Affichage seulement : le Bloc-notes confirme UTF-8 et fins de ligne LF ; fichier édité avec le Bloc-notes, jamais réécrit d'après l'affichage de `cmd` |
+
+**Constats utiles au groupe**
+- Les 50 000 lignes sont engendrées avec `random()` : le matricule `BF000123` a une moyenne de 9,05 chez moi et de 19,73 chez l'architecte. Fixer la graine dans `scripts/bdd.sh` rendrait les résultats reproductibles.
+- Le Vagrantfile utilise `"admin"` comme mot de passe Grafana par défaut si `.env` n'en définit pas : valeur faible à supprimer.
+- Le dépôt GitHub s'affiche en visibilité publique ; il doit être passé en privé.
+
+**Ce que je ferais autrement** : automatiser les tests d'erreurs dans un script (`tests/`) au lieu de les saisir à la main, et répéter chaque mesure plusieurs fois.
+
+### 6.2 OUEDRAOGO Adama, architecte réseau et répartition
+_Voir les sections 2 à 5._
+
+### 6.3 TINDANO Fernand Amed, ingénieur données
+_À compléter._
+
+### 6.4 KABORE Nongdo Valery Ariel, ingénieur essais et observabilité
+_À compléter._

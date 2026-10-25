@@ -3,7 +3,7 @@
 Auteur : Lareine TEGA   Date : 24/10/2026   Poste : ___ (CPU, RAM)   GROUPE (.env) : 5 (réseau 192.168.60.0/24)
 
 Les sorties ci-dessous sont celles relevées sur le poste de l'auteur (captures d'écran du 24/10/2026), recopiées sans retouche.
-Statut : T1, T2, T3, T6, T7 réalisés ; T5 à compléter (voir commentaire) ; T4 à faire.
+Statut : T1 à T7 réalisés (T4, T5 en test direct et le temps de T6 relevés le 25/10/2026). Seule la vérification complémentaire de T7 (`.env` non suivi par Git) reste à faire.
 
 ## Démarrage de la plateforme
 
@@ -86,9 +86,20 @@ curl -i http://localhost:8080/nimporte
 ```
 Attendu : `404` et `{"erreur": "route inconnue"}`
 
-Sortie brute : _à faire_
+Sortie brute :
+```
+HTTP/1.0 404 Not Found
+server: BaseHTTP/0.6 Python/3.12.3
+date: Sun, 25 Oct 2026 16:24:55 GMT
+content-type: application/json; charset=utf-8
+content-length: 28
+connection: keep-alive
 
-Commentaire : _à faire_
+{"erreur": "route inconnue"}
+```
+Commentaire : conforme. Une route qui n'existe pas reçoit une erreur 404 en JSON, comme les autres erreurs : l'application ne renvoie jamais de page d'erreur brute.
+
+![T4 et T5 (test direct sur app1)](captures/07-t4-t5-test-direct-app1.png)
 
 ## T5. Absence d'état : redémarrage d'un serveur applicatif
 
@@ -115,7 +126,19 @@ Commentaire : la réponse est identique à T3. **Limite de ce test** : la requê
 vagrant ssh app1 -c "sudo systemctl restart resultats-bf"
 curl -i "http://192.168.60.21:3000/resultat?matricule=BF000123"
 ```
-Sortie brute du test direct : _à faire_
+Sortie brute du test direct :
+```
+$ vagrant ssh app1 -c "sudo systemctl restart resultats-bf"
+$ curl -i "http://192.168.60.21:3000/resultat?matricule=BF000123"
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.12.3
+Date: Sun, 25 Oct 2026 16:26:13 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 95
+
+{"matricule": "BF000123", "nom": "Candidat 123", "serie": "E", "moyenne": 9.05, "admis": false}
+```
+Commentaire du test direct : cette fois la requête vise le port 3000 d'app1, sans répartiteur. Le serveur redémarré répond aussitôt avec les mêmes données : il ne conserve aucun état local, tout est relu dans la base.
 
 ![T5 : redémarrage d'app1 puis lecture](captures/04-t5-redemarrage-app1.png)
 
@@ -158,7 +181,16 @@ Commentaire : conforme. Quand la base primaire est arrêtée, l'application rép
 
 Incident de manipulation (sans lien avec l'application) : une première exécution a utilisé l'adresse littérale `192.168.X.21` (`curl: (6) Could not resolve host`), car le X n'avait pas été remplacé par 60. Le test a été refait avec la bonne adresse.
 
-Temps de réponse de `/sante` : _à mesurer_ (`curl -o /dev/null -s -w '%{time_total}\n' http://192.168.60.21:3000/sante`)
+Temps de réponse de `/sante` avec la base arrêtée (mesure du 25/10/2026) :
+```
+$ vagrant halt bdd1
+$ sleep 5
+$ curl -o /dev/null -s -w '%{time_total}\n' http://192.168.60.21:3000/sante
+2.060295
+```
+Soit environ **2,06 s**. Ce délai correspond au `connect_timeout=2` de l'application : elle attend deux secondes la base avant de répondre 503. Après `vagrant up bdd1`, `curl -i "http://localhost:8080/resultat?matricule=BF000123"` répond de nouveau `200` : la plateforme est revenue sans autre action.
+
+![T6 : temps de réponse de /sante, base arrêtée](captures/08-t6-temps-reponse-sante.png)
 
 ![T6 : base arrêtée, 503 sur /sante, 200 sur /info](captures/05-t6-base-arretee-503.png)
 
@@ -199,9 +231,9 @@ Vérification complémentaire : `git ls-files | grep -x .env` ne doit rien affic
 | Test | Constat | Proposition |
 |------|---------|-------------|
 | T3 | `moyenne` de BF000123 vaut 9,05 sur ce poste, alors que le poste d'Adama affiche 19,73 | Les 50 000 lignes sont engendrées avec `random()` : les données diffèrent à chaque reconstruction. Pour des mesures reproductibles, fixer la graine (`SELECT setseed(0.42);` avant l'INSERT de `scripts/bdd.sh`) |
-| T5 | Le test passe par le répartiteur et ne prouve pas que app1 répond après redémarrage | Refaire le test directement sur `192.168.60.21:3000` |
+| T5 | Le premier test passait par le répartiteur et ne prouvait pas qu'app1 répondait | Résolu : test refait directement sur `192.168.60.21:3000` (200) |
 | T7 | Mot de passe Grafana par défaut `"admin"` dans le Vagrantfile | Exiger la variable dans `.env` ou supprimer la valeur par défaut |
 
 ## Conclusion
 
-Les trois codes d'erreur de l'application (400, 404, 503) sont conformes à l'attendu, et la réponse JSON est toujours propre. Le serveur ne garde aucun état local, et la base absente est signalée par `/sante` sans que `/info` en souffre. Restent à compléter : T4, le test direct de T5, et le temps de réponse de T6.
+Les trois codes d'erreur de l'application (400, 404, 503) sont conformes à l'attendu, et la réponse JSON est toujours propre. Le serveur ne garde aucun état local, et la base absente est signalée par `/sante` sans que `/info` en souffre. Un `/sante` en 503 met environ 2 s à répondre quand la base est arrêtée (délai de connexion de 2 s) : c'est la limite à citer dans le dossier. Reste à faire : vérifier avec `git ls-files | grep -x .env` que le fichier `.env` n'est pas suivi par Git.

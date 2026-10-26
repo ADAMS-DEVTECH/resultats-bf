@@ -14,7 +14,7 @@ Projet de groupe, Master 1 Informatique, IBAM, Université Joseph Ki Zerbo.
 - 8 Go de RAM (le socle obligatoire utilise environ 3 Go)
 - Boîte `bento/ubuntu-24.04` (version épinglée dans le Vagrantfile)
 
-## Démarrage rapide
+## Démarrage  rapide
 
 ```bash
 git clone <url-du-depot> resultats-bf

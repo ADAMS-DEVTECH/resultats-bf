@@ -15,7 +15,7 @@ Projet de groupe, Master 1 Informatique, IBAM, Université Joseph Ki Zerbo.
 - Boîte `bento/ubuntu-24.04`, version épinglée `202404.26.0` dans le Vagrantfile (la `202404.23.0` de l'Annexe A du sujet n'existe plus)
 - Sous Windows : **Git Bash** pour lancer les scripts de `tests/` et `scripts/bascule.sh`
 
-## Démarrage rapide
+## Démarrage  rapide
 
 ```bash
 git clone https://github.com/ADAMS-DEVTECH/resultats-bf.git

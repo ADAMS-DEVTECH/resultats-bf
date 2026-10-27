@@ -101,6 +101,7 @@ _Chaque membre complète sa partie : tâches réalisées, commit hors domaine (r
 
 ### 6.2 OUEDRAOGO Adama, architecte réseau et répartition
 
+
 **Tâches réalisées** : plan d'adressage, Vagrantfile (source unique `noeuds.yml`, lecture de `.env`), HAProxy et sonde de santé, extension E1 (lb2, keepalived, adresse virtuelle). Scénarios V1 (écart 0 %), V2 (0 requête perdue, détection en 1,6 s) et V6 (reprise en 3,9 s). Création et administration du dépôt GitHub, relecture et fusion des pull requests.
 
 **Tâches du rôle « essais et observabilité » réalisées par Adama** (voir 6.4).
@@ -140,3 +141,11 @@ _Chaque membre complète sa partie : tâches réalisées, commit hors domaine (r
 ### 6.4 KABORE Nongdo Valery Ariel, ingénieur essais et observabilité
 
 Les tâches de ce rôle ont été réalisées par Adama : V3, V5, extension E2 et consolidation des résultats (`docs/modele-resultats.md`). _À compléter par le titulaire du rôle : sa part de travail, son commit hors domaine et ses difficultés._
+=======
+_Voir les sections 2 à 5._
+
+### 6.3 TINDANO Fernand Amed, ingénieur données
+_À compléter._
+
+### 6.4 KABORE Nongdo Valery Ariel, ingénieur essais et observabilité
+

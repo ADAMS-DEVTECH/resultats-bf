@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS resultats (
   moyenne   numeric(4,2) NOT NULL,
   admis     boolean NOT NULL
 );
+SELECT setseed(0.42);
 INSERT INTO resultats (matricule, nom, serie, moyenne, admis)
 SELECT m, 'Candidat ' || i, (ARRAY['A','C','D','E'])[1 + i % 4], mo, mo >= 10
 FROM (SELECT i, 'BF' || lpad(i::text, 6, '0') AS m,

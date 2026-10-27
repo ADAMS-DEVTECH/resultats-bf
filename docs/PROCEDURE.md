@@ -84,7 +84,7 @@ Ne mettez pas NB_APP en variable d'environnement ponctuelle : vous oublieriez de
 |----------|----------|-----------|
 | V1 | `tests/v1-repartition.sh` | Écart < 20 % |
 | V2 | `tests/panne.sh app1 http://localhost:8080/info` | Requêtes perdues, période dégradée |
-| V3 | `tests/v3-charge.sh` avec NB_APP=2 puis 4 (3 essais chacun) | Requêtes par seconde |
+| V3 | `tests/v3-charge.sh` avec NB_APP=2 puis 4 (3 essais chacun) | Requêtes par seconde, **et pourcentage de réponses non 2xx** : le script signale une mesure non valide au-delà de 1 %. En cas d'erreurs, lancer `tests/v3-diagnostic.sh` |
 | V4 | `tests/v4-panne-bdd.sh` | 503 propre, durée de bascule |
 | V5 | `tests/v5-reconstruction.sh` | Durée totale |
 | V6 (E1) | `tests/panne.sh lb1 http://192.168.X.5/info` | Temps de reprise VRRP |
@@ -100,7 +100,8 @@ Le port 8080 de l'hôte reste lié à lb1 seulement : pour la démonstration E1,
 
 **E2, observabilité** : mettre `E2_OBS=1`, puis `vagrant up` (crée obs, installe Prometheus et Grafana : télécharge environ 300 Mo).
 Grafana : `http://192.168.X.41:3000` (admin / mot de passe du `.env`), tableau « RESULTATS-BF ».
-Pendant V3 le débit réseau de lb1 monte, pendant V2 la courbe `up` d'app1 tombe à 0.
+Contrôles en ligne de commande : `curl http://192.168.X.41:9090/-/healthy` (« Prometheus Server is Healthy. ») et `curl -s http://192.168.X.41:9090/api/v1/targets` (une cible `"health":"up"` par machine). La page `/targets` de Prometheus n'existe pas dans ce paquet : ce n'est pas une panne.
+Si le provisionnement s'arrête sur « Grafana ne répond pas », attendre quelques minutes puis relancer `vagrant provision obs` (premier démarrage lent). Pendant V3 le débit réseau monte, pendant V2 la courbe « Machines vivantes » d'app1 tombe à 0.
 Mémoire : n'allumez E2 que quand le reste est stable (socle 3,1 Go + lb2 0,5 Go + obs 0,8 Go).
 
 **E3 (Redis) et E4 (déploiement sans coupure)** ne sont pas fournis. Si vous visez l'un d'eux à la place de E1/E2, demandez-moi le script.

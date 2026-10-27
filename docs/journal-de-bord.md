@@ -144,8 +144,6 @@ Les tâches de ce rôle ont été réalisées par Adama : V3, V5, extension E2 e
 =======
 _Voir les sections 2 à 5._
 
-### 6.3 TINDANO Fernand Amed, ingénieur données
-_À compléter._
 
-### 6.4 KABORE Nongdo Valery Ariel, ingénieur essais et observabilité
+
 
